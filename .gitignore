@@ -1,0 +1,30 @@
+# Dependency directories
+node_modules/
+
+# Build outputs
+dist/
+frontend/dist/
+backend/dist/
+contracts/cache/
+contracts/artifacts/
+backend/data/
+contracts/.env/
+
+# Environment files
+.env
+frontend/.env
+backend/.env
+
+# TypeScript build info
+**/*.tsbuildinfo
+
+# Logs
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# IDE configs
+.vscode/
+.idea/
