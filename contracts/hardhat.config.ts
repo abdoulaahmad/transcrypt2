@@ -6,7 +6,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const ganachePrivateKey = process.env.GANACHE_PRIVATE_KEY;
-const ganacheUrl = process.env.GANACHE_RPC_URL || "http://127.0.0.1:8545";
+const ganacheUrl = process.env.GANACHE_RPC_URL || "http://127.0.0.1:7545";
 
 const blockdagNetwork: NetworkUserConfig = {
   url: process.env.BLOCKDAG_RPC_URL || "",

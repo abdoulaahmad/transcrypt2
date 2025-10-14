@@ -47,6 +47,7 @@ contract TranscriptRegistry is AccessControl {
     event BreakGlassConsentUpdated(bytes32 indexed transcriptId, address indexed student, bool consented, uint64 updatedAt);
     event BreakGlassRequested(bytes32 indexed transcriptId, address indexed employer, uint64 requestedAt);
     event EmergencyAccessGranted(bytes32 indexed transcriptId, address indexed employer, bytes keyCiphertext, uint64 fulfilledAt);
+    event BreakGlassAccess(bytes32 indexed transcriptId, address indexed accessor, string reason, string courtOrder, uint256 timestamp);
 
     error TranscriptAlreadyExists(bytes32 transcriptId);
     error TranscriptNotFound(bytes32 transcriptId);
@@ -205,6 +206,26 @@ contract TranscriptRegistry is AccessControl {
             record.fulfilledAt,
             consent.updatedBy,
             record.fulfilledBy
+        );
+    }
+
+    // -----------------------------
+    // Break-glass audit logging (Ministry only)
+    // -----------------------------
+    function logEmergencyAccess(
+        bytes32 transcriptId,
+        address accessor,
+        string memory reason,
+        string memory courtOrder
+    ) external onlyRole(MINISTRY_ROLE) {
+        if (!transcripts[transcriptId].exists) revert TranscriptNotFound(transcriptId);
+        
+        emit BreakGlassAccess(
+            transcriptId,
+            accessor,
+            reason,
+            courtOrder,
+            block.timestamp
         );
     }
 }

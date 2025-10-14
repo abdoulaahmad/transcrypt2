@@ -2,18 +2,31 @@ import express, { type Request, type Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
+import { ethers } from "ethers";
 
 import { config } from "./config.js";
 import { startRegistryListener } from "./listeners/registryListener.js";
 import { buildTranscriptRouter } from "./routes/transcriptRoutes.js";
 import { buildFileRouter } from "./routes/fileRoutes.js";
 import { buildEncryptionKeyRouter } from "./routes/encryptionKeyRoutes.js";
+import { buildBreakGlassRouter } from "./routes/breakGlassRoutes.js";
 import { TranscriptStore } from "./store/TranscriptStore.js";
 import { FileStore } from "./store/FileStore.js";
+import { BreakGlassService } from "./services/breakGlassService.js";
 
 const app = express();
 const transcriptStore = new TranscriptStore(config.dbPath);
 const fileStore = new FileStore("./data/files");
+
+// Initialize Break Glass Service
+const provider = new ethers.JsonRpcProvider(config.rpcUrl);
+const breakGlassService = new BreakGlassService(
+  transcriptStore,
+  provider,
+  config.contractAddress,
+  config.ministryAddress || ''
+);
+
 const stopListener = startRegistryListener(transcriptStore);
 
 const allowAllOrigins = config.corsOrigins.includes("*");
@@ -38,6 +51,10 @@ app.get("/health", (_req: Request, res: Response) => {
 app.use("/transcripts", buildTranscriptRouter(transcriptStore));
 app.use("/files", buildFileRouter(fileStore));
 app.use("/encryption-keys", buildEncryptionKeyRouter(transcriptStore));
+app.use("/break-glass", buildBreakGlassRouter(breakGlassService));
+
+// Export breakGlassService for use in transcript uploads
+export { breakGlassService };
 
 const server = app.listen(config.port, () => {
   // eslint-disable-next-line no-console
@@ -55,3 +72,14 @@ const gracefulShutdown = () => {
 
 process.on("SIGINT", gracefulShutdown);
 process.on("SIGTERM", gracefulShutdown);
+
+process.on("unhandledRejection", (reason) => {
+  // eslint-disable-next-line no-console
+  console.error("Unhandled rejection", reason);
+});
+
+process.on("uncaughtException", (error) => {
+  // eslint-disable-next-line no-console
+  console.error("Uncaught exception", error);
+  gracefulShutdown();
+});

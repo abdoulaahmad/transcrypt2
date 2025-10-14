@@ -4,7 +4,8 @@
     "private": true,
     "scripts": {
         "build": "hardhat compile",
-        "test": "hardhat test"
+        "test": "hardhat test",
+        "issue:transcript": "tsx scripts/issueTranscript.ts"
     },
     "dependencies": {
         "@openzeppelin/contracts": "^4.9.5",
@@ -17,6 +18,7 @@
         "@types/node": "^20.12.7",
         "hardhat": "^2.19.4",
         "ts-node": "^10.9.2",
-        "typescript": "^5.4.5"
+        "typescript": "^5.4.5",
+        "tsx": "^4.15.7"
     }
 }

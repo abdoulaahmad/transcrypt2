@@ -5,6 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "tsx watch src/index.ts",
+        "dump:db": "tsx scripts/dumpRocksDb.ts",
         "build": "tsc --project tsconfig.json",
         "start": "node dist/index.js",
         "lint": "eslint \"src/**/*.{ts,tsx}\""

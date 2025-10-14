@@ -38,6 +38,7 @@ export interface TranscriptRegistryInterface extends Interface {
       | "grantRole"
       | "hasRole"
       | "issueTranscript"
+      | "logEmergencyAccess"
       | "releaseEmergencyAccess"
       | "renounceRole"
       | "requestAccess"
@@ -53,6 +54,7 @@ export interface TranscriptRegistryInterface extends Interface {
       | "AccessGranted"
       | "AccessRequested"
       | "AccessRevoked"
+      | "BreakGlassAccess"
       | "BreakGlassConsentUpdated"
       | "BreakGlassRequested"
       | "EmergencyAccessGranted"
@@ -109,6 +111,10 @@ export interface TranscriptRegistryInterface extends Interface {
   encodeFunctionData(
     functionFragment: "issueTranscript",
     values: [BytesLike, AddressLike, string, BytesLike, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "logEmergencyAccess",
+    values: [BytesLike, AddressLike, string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "releaseEmergencyAccess",
@@ -183,6 +189,10 @@ export interface TranscriptRegistryInterface extends Interface {
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "issueTranscript",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "logEmergencyAccess",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -278,6 +288,34 @@ export namespace AccessRevokedEvent {
     transcriptId: string;
     accessor: string;
     revokedAt: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace BreakGlassAccessEvent {
+  export type InputTuple = [
+    transcriptId: BytesLike,
+    accessor: AddressLike,
+    reason: string,
+    courtOrder: string,
+    timestamp: BigNumberish
+  ];
+  export type OutputTuple = [
+    transcriptId: string,
+    accessor: string,
+    reason: string,
+    courtOrder: string,
+    timestamp: bigint
+  ];
+  export interface OutputObject {
+    transcriptId: string;
+    accessor: string;
+    reason: string;
+    courtOrder: string;
+    timestamp: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -561,6 +599,17 @@ export interface TranscriptRegistry extends BaseContract {
     "nonpayable"
   >;
 
+  logEmergencyAccess: TypedContractMethod<
+    [
+      transcriptId: BytesLike,
+      accessor: AddressLike,
+      reason: string,
+      courtOrder: string
+    ],
+    [void],
+    "nonpayable"
+  >;
+
   releaseEmergencyAccess: TypedContractMethod<
     [transcriptId: BytesLike, employer: AddressLike, keyCiphertext: BytesLike],
     [void],
@@ -701,6 +750,18 @@ export interface TranscriptRegistry extends BaseContract {
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "logEmergencyAccess"
+  ): TypedContractMethod<
+    [
+      transcriptId: BytesLike,
+      accessor: AddressLike,
+      reason: string,
+      courtOrder: string
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "releaseEmergencyAccess"
   ): TypedContractMethod<
     [transcriptId: BytesLike, employer: AddressLike, keyCiphertext: BytesLike],
@@ -765,6 +826,13 @@ export interface TranscriptRegistry extends BaseContract {
     AccessRevokedEvent.InputTuple,
     AccessRevokedEvent.OutputTuple,
     AccessRevokedEvent.OutputObject
+  >;
+  getEvent(
+    key: "BreakGlassAccess"
+  ): TypedContractEvent<
+    BreakGlassAccessEvent.InputTuple,
+    BreakGlassAccessEvent.OutputTuple,
+    BreakGlassAccessEvent.OutputObject
   >;
   getEvent(
     key: "BreakGlassConsentUpdated"
@@ -848,6 +916,17 @@ export interface TranscriptRegistry extends BaseContract {
       AccessRevokedEvent.InputTuple,
       AccessRevokedEvent.OutputTuple,
       AccessRevokedEvent.OutputObject
+    >;
+
+    "BreakGlassAccess(bytes32,address,string,string,uint256)": TypedContractEvent<
+      BreakGlassAccessEvent.InputTuple,
+      BreakGlassAccessEvent.OutputTuple,
+      BreakGlassAccessEvent.OutputObject
+    >;
+    BreakGlassAccess: TypedContractEvent<
+      BreakGlassAccessEvent.InputTuple,
+      BreakGlassAccessEvent.OutputTuple,
+      BreakGlassAccessEvent.OutputObject
     >;
 
     "BreakGlassConsentUpdated(bytes32,address,bool,uint64)": TypedContractEvent<

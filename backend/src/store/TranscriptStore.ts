@@ -35,15 +35,32 @@ export class TranscriptStore {
     return `owner:${owner.toLowerCase()}:${transcriptId}`;
   }
 
+  private accessorIndexKey(accessor: string, transcriptId: string) {
+    return `accessor:${accessor.toLowerCase()}:${transcriptId}`;
+  }
+
   private publicKeyKey(address: string) {
     return `pubkey:${address.toLowerCase()}`;
   }
 
-  async put(record: TranscriptRecord): Promise<void> {
-    await this.batch([
-      { type: "put", key: this.transcriptKey(record.transcriptId), value: JSON.stringify(record) },
-      { type: "put", key: this.ownerIndexKey(record.student, record.transcriptId), value: record.transcriptId }
-    ]);
+  async put(record: TranscriptRecord, previous?: TranscriptRecord): Promise<void> {
+    const operations: { type: "put" | "del"; key: string; value?: string }[] = [];
+
+    if (previous) {
+      operations.push({ type: "del", key: this.ownerIndexKey(previous.student, previous.transcriptId) });
+      for (const accessor of Object.keys(previous.encryptedKeys ?? {})) {
+        operations.push({ type: "del", key: this.accessorIndexKey(accessor, previous.transcriptId) });
+      }
+    }
+
+    operations.push({ type: "put", key: this.transcriptKey(record.transcriptId), value: JSON.stringify(record) });
+    operations.push({ type: "put", key: this.ownerIndexKey(record.student, record.transcriptId), value: record.transcriptId });
+
+    for (const accessor of Object.keys(record.encryptedKeys ?? {})) {
+      operations.push({ type: "put", key: this.accessorIndexKey(accessor, record.transcriptId), value: record.transcriptId });
+    }
+
+    await this.batch(operations);
   }
 
   async updateEncryptedKey(transcriptId: string, accessor: string, encryptedKey: string): Promise<TranscriptRecord> {
@@ -55,7 +72,7 @@ export class TranscriptStore {
         [accessor.toLowerCase()]: encryptedKey
       }
     };
-    await this.put(updated);
+    await this.put(updated, existing);
     return updated;
   }
 
@@ -89,9 +106,29 @@ export class TranscriptStore {
     return records;
   }
 
+  async listByAccessor(accessor: string): Promise<TranscriptRecord[]> {
+    const records: TranscriptRecord[] = [];
+    const normalizedAccessor = accessor.toLowerCase();
+    const prefix = this.accessorIndexKey(normalizedAccessor, "");
+
+    await this.iterate(prefix, async (key) => {
+      const transcriptId = key.split(":").pop();
+      if (!transcriptId) return;
+      const record = await this.get(transcriptId);
+      // Only include transcripts where the accessor still has a key stored.
+      if (record.encryptedKeys[normalizedAccessor]) {
+        records.push(record);
+      }
+    });
+
+    return records;
+  }
+
   private getRaw(key: string): Promise<string | undefined> {
     return new Promise((resolve, reject) => {
-      this.db.get(key, (error: Error | undefined | null, value?: Buffer) => {
+      (this.db as unknown as { get: (key: string, callback: (error: Error | undefined | null, value?: Buffer) => void) => void }).get(
+        key,
+        (error: Error | undefined | null, value?: Buffer) => {
         if (error) {
           if ((error as { notFound?: boolean }).notFound) {
             resolve(undefined);
@@ -101,25 +138,34 @@ export class TranscriptStore {
           return;
         }
         resolve(value?.toString());
-      });
+        }
+      );
     });
   }
 
   private batch(operations: { type: "put" | "del"; key: string; value?: string }[]): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.db.batch(operations, (error: Error | undefined | null) => {
+      (this.db as unknown as { batch: (ops: typeof operations, callback: (error: Error | undefined | null) => void) => void }).batch(
+        operations,
+        (error: Error | undefined | null) => {
         if (error) {
           reject(error);
           return;
         }
         resolve();
-      });
+        }
+      );
     });
   }
 
   private iterate(prefix: string, onKey: (key: string) => Promise<void>): Promise<void> {
     return new Promise((resolve, reject) => {
-      const iterator = this.db.iterator({
+      const iterator = (this.db as unknown as {
+        iterator: (options: { gte: string; keys: boolean; values: boolean }) => {
+          end: (callback: (error?: Error | null) => void) => void;
+          next: (callback: (error: Error | null, key?: Buffer) => void) => void;
+        };
+      }).iterator({
         gte: prefix,
         keys: true,
         values: false
@@ -142,6 +188,12 @@ export class TranscriptStore {
       const next = () => {
         iterator.next((error: Error | null, key?: Buffer) => {
           if (error) {
+            // eslint-disable-next-line no-console
+            console.error("TranscriptStore iterator error", error);
+            if ((error as { notFound?: boolean }).notFound) {
+              endIterator();
+              return;
+            }
             endIterator(error);
             return;
           }
