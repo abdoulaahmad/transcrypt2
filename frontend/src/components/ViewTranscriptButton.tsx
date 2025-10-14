@@ -76,9 +76,20 @@ export function ViewTranscriptButton({ transcriptId }: ViewTranscriptButtonProps
         throw new Error("No encrypted AES key found for this wallet. Request access from the student.");
       }
 
+      // Debug logging
+      console.log('[EMPLOYER_DECRYPT] EncryptedKeyJson (raw):', encryptedKeyJson);
+      // If the key is hex-encoded, decode it to a JSON string
+      let decodedKeyJson = encryptedKeyJson;
+      if (typeof encryptedKeyJson === 'string' && encryptedKeyJson.startsWith('0x')) {
+        const hex = encryptedKeyJson.slice(2);
+        const bytes = new Uint8Array(hex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+        decodedKeyJson = new TextDecoder().decode(bytes);
+        console.log('[EMPLOYER_DECRYPT] DecodedKeyJson:', decodedKeyJson);
+      }
       let rawKey: ArrayBuffer;
       try {
-        rawKey = await decryptAesKey(encryptedKeyJson, walletAddress);
+        rawKey = await decryptAesKey(decodedKeyJson, walletAddress);
+        console.log('[EMPLOYER_DECRYPT] Decrypted AES key:', rawKey);
       } catch (decryptError) {
         const decryptMessage = (decryptError as Error).message ?? "";
         if (decryptMessage.includes("User denied message decryption")) {

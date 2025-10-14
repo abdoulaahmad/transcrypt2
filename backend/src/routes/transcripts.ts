@@ -153,8 +153,10 @@ router.post("/:transcriptId/grant", async (req: Request, res: Response) => {
     return res.status(401).json({ error: "Invalid signature" });
   }
 
+
   let wrappedKey: string | undefined;
   if (encryptedKey) {
+    console.log('[GRANT_ACCESS] Received encryptedKey from frontend:', encryptedKey);
     wrappedKey = encryptedKey;
   } else {
     const aesKey = keyVault.get(transcriptId);
@@ -165,7 +167,10 @@ router.post("/:transcriptId/grant", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "accessorEncryptionPublicKey is required if encryptedKey is not provided" });
     }
     wrappedKey = encryptKeyWithEncryptionPublicKey(aesKey, accessorEncryptionPublicKey);
+    console.log('[GRANT_ACCESS] Backend re-wrapped key:', wrappedKey);
   }
+
+  console.log('[GRANT_ACCESS] Key sent to contract:', wrappedKey);
 
   const receipt = await blockchainService.grantAccess(
     {

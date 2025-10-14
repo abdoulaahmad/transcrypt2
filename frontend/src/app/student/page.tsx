@@ -56,6 +56,12 @@ export default function StudentDashboard() {
       // 4. Hex-encode JSON string
       const hexWrapped =
         '0x' + Array.from(new TextEncoder().encode(wrappedForEmployer)).map(b => b.toString(16).padStart(2, '0')).join('');
+
+      // Debug logging
+      console.log('[GRANT_ACCESS] Employer public key:', accessorEncryptionKey);
+      console.log('[GRANT_ACCESS] Wrapped AES key (JSON):', wrappedForEmployer);
+      console.log('[GRANT_ACCESS] Hex-encoded wrapped key:', hexWrapped);
+
       // 5. Sign and send to backend
       const { message, nonce } = createSignaturePayload({
         action: "GRANT_ACCESS",

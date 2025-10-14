@@ -29,8 +29,25 @@ export class BreakGlassService {
     // @ts-ignore
     const dbInstance = this.store.db;
     console.log('[BreakGlass][DEBUG][store] RocksDB path:', dbPath, 'db instance:', dbInstance);
+
+    let hexWrappedKey = wrappedKey;
+    try {
+      if (typeof wrappedKey === 'string' && wrappedKey.trim().startsWith('{')) {
+        // If it's a JSON string, parse and convert to hex
+        const parsed = JSON.parse(wrappedKey);
+        hexWrappedKey = wrappedKeyJsonToHex(parsed);
+        console.log('[BreakGlass][DEBUG] Converted ministry wrappedKey from JSON to hex:', hexWrappedKey);
+      } else if (typeof wrappedKey === 'object') {
+        // If it's already an object, convert to hex
+        hexWrappedKey = wrappedKeyJsonToHex(wrappedKey);
+        console.log('[BreakGlass][DEBUG] Converted ministry wrappedKey object to hex:', hexWrappedKey);
+      }
+    } catch (e) {
+      console.error('[BreakGlass][ERROR] Failed to convert ministry wrappedKey to hex:', e);
+    }
+
     const value = JSON.stringify({
-      wrappedKey,
+      wrappedKey: hexWrappedKey,
       createdAt: Date.now(),
       accessor: 'ministry'
     });
@@ -94,11 +111,19 @@ export class BreakGlassService {
       throw new Error('Ministry key not found for this transcript');
     }
 
+    // Debug: print the raw ministryWrappedKey before conversion
+    console.log('[BreakGlass][DEBUG] Raw ministryWrappedKey:', ministryWrappedKey);
     // Convert JSON-wrapped key to MetaMask-compatible hex string
     let hexKey: string;
     try {
-      const parsed = typeof ministryWrappedKey === 'string' ? JSON.parse(ministryWrappedKey) : ministryWrappedKey;
-      hexKey = wrappedKeyJsonToHex(parsed);
+      if (typeof ministryWrappedKey === 'string' && ministryWrappedKey.startsWith('0x')) {
+        hexKey = ministryWrappedKey;
+        console.log('[BreakGlass][DEBUG] Using ministryWrappedKey as hex:', hexKey);
+      } else {
+        const parsed = typeof ministryWrappedKey === 'string' ? JSON.parse(ministryWrappedKey) : ministryWrappedKey;
+        hexKey = wrappedKeyJsonToHex(parsed);
+        console.log('[BreakGlass][DEBUG] Converted ministryWrappedKey from JSON to hex:', hexKey);
+      }
     } catch (e) {
       console.error('[BreakGlass] Failed to convert wrapped key to hex:', e);
       throw new Error('Failed to convert wrapped key to MetaMask format');
