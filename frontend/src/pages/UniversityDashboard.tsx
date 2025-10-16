@@ -1,4 +1,3 @@
-import { GrantAccessForm } from "../components/GrantAccessForm";
 import { TranscriptList } from "../components/TranscriptList";
 import { UploadTranscriptForm } from "../components/UploadTranscriptForm";
 import type { TranscriptRecord } from "../types/transcript";
@@ -21,9 +20,7 @@ export function UniversityDashboard({ owner, transcripts, isLoading }: Universit
         ) : (
           <TranscriptList
             transcripts={transcripts}
-            renderActions={(record) => (
-              <GrantAccessForm className="grant-form" owner={owner} transcriptId={record.transcriptId} />
-            )}
+            renderActions={() => null}
           />
         )}
       </div>

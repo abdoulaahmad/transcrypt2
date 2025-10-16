@@ -17,13 +17,11 @@ export function StudentDashboard({ transcripts, isLoading }: StudentDashboardPro
   return (
     <>
       <RegisterEncryptionKeyButton />
-      
       {address && <AccessHistoryPanel studentAddress={address} />}
-      
       <div className="card">
         <h2>Your Transcripts</h2>
         <p style={{ color: "var(--text-secondary)" }}>
-          Decrypt and view transcripts that have been shared with your wallet. Grant access to employers or institutions as needed.
+          Decrypt and view transcripts that have been shared with your wallet.
         </p>
         {isLoading ? (
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -34,10 +32,7 @@ export function StudentDashboard({ transcripts, isLoading }: StudentDashboardPro
           <TranscriptList
             transcripts={transcripts}
             renderActions={(record) => (
-              <>
-                <ViewTranscriptButton transcriptId={record.transcriptId as `0x${string}`} />
-                <StudentGrantAccessForm transcript={record} />
-              </>
+              <ViewTranscriptButton transcriptId={record.transcriptId as `0x${string}`} />
             )}
           />
         )}

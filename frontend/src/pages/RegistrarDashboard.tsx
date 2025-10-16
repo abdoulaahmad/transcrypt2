@@ -18,9 +18,7 @@ export function RegistrarDashboard({ owner, transcripts, isLoading }: RegistrarD
       ) : (
         <TranscriptList
           transcripts={transcripts}
-          renderActions={(record) => (
-            <GrantAccessForm className="grant-form" owner={owner} transcriptId={record.transcriptId} />
-          )}
+          renderActions={() => null}
         />
       )}
     </div>
