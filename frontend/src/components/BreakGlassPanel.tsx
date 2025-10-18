@@ -68,16 +68,22 @@ export function BreakGlassPanel({ onSuccess }: BreakGlassFormProps) {
           Break Glass - Emergency Access
         </h2>
       </div>
-      <div className="status-message status-warning" style={{ marginBottom: "1.5rem" }}>
+      <div className="status-warning" style={{ marginBottom: "1.5rem", padding: "1rem", borderRadius: "0.75rem" }}>
         <p style={{ margin: 0, fontSize: "0.875rem", lineHeight: 1.6 }}>
-          ⚠️ <strong>Warning:</strong> This action will be logged on-chain and the student will be notified immediately.<br />
+          ⚠️ <strong>Warning:</strong> This action will be immutably logged on-chain and the document owner will be notified immediately.<br />
           Use only for legal investigations, court orders, or fraud prevention.
         </p>
       </div>
       <form onSubmit={handleExecuteBreakGlass} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
         <div>
-          <label htmlFor="transcriptId" style={{ display: "block", marginBottom: "0.5rem" }}>
-            Transcript ID
+          <label htmlFor="transcriptId" style={{ 
+            display: "block", 
+            marginBottom: "0.5rem",
+            fontSize: "0.875rem",
+            fontWeight: 500,
+            color: "var(--text-primary)"
+          }}>
+            Document ID
           </label>
           <input
             id="transcriptId"
@@ -85,12 +91,27 @@ export function BreakGlassPanel({ onSuccess }: BreakGlassFormProps) {
             value={transcriptId}
             onChange={e => setTranscriptId(e.target.value)}
             placeholder="0x..."
-            style={{ width: "100%" }}
+            className="wallet-address"
+            style={{ 
+              width: "100%",
+              padding: "0.75rem 1rem",
+              borderRadius: "0.75rem",
+              border: "1.5px solid var(--border)",
+              fontSize: "0.9375rem",
+              background: "var(--surface)",
+              color: "var(--text-primary)"
+            }}
             required
           />
         </div>
         <div>
-          <label htmlFor="reason" style={{ display: "block", marginBottom: "0.5rem" }}>
+          <label htmlFor="reason" style={{ 
+            display: "block", 
+            marginBottom: "0.5rem",
+            fontSize: "0.875rem",
+            fontWeight: 500,
+            color: "var(--text-primary)"
+          }}>
             Reason for Access
           </label>
           <textarea
@@ -99,15 +120,31 @@ export function BreakGlassPanel({ onSuccess }: BreakGlassFormProps) {
             onChange={e => setReason(e.target.value)}
             placeholder="Legal investigation, court order, fraud detection..."
             required
-            style={{ width: "100%", minHeight: "100px" }}
+            style={{ 
+              width: "100%", 
+              minHeight: "100px",
+              padding: "0.75rem 1rem",
+              borderRadius: "0.75rem",
+              border: "1.5px solid var(--border)",
+              fontSize: "0.9375rem",
+              background: "var(--surface)",
+              color: "var(--text-primary)",
+              resize: "vertical"
+            }}
           />
           <small style={{ color: "var(--text-secondary)", fontSize: "0.8125rem" }}>
             Minimum 10 characters. This will be permanently recorded on-chain.
           </small>
         </div>
         <div>
-          <label htmlFor="courtOrder" style={{ display: "block", marginBottom: "0.5rem" }}>
-            Court Order Reference <span style={{ color: "var(--text-secondary)", fontWeight: 400 }}>(Optional)</span>
+          <label htmlFor="courtOrder" style={{ 
+            display: "block", 
+            marginBottom: "0.5rem",
+            fontSize: "0.875rem",
+            fontWeight: 500,
+            color: "var(--text-primary)"
+          }}>
+            Legal Authorization Reference <span style={{ color: "var(--text-secondary)", fontWeight: 400 }}>(Optional)</span>
           </label>
           <input
             id="courtOrder"
@@ -115,79 +152,116 @@ export function BreakGlassPanel({ onSuccess }: BreakGlassFormProps) {
             value={courtOrder}
             onChange={e => setCourtOrder(e.target.value)}
             placeholder="Case #12345..."
-            style={{ width: "100%" }}
+            style={{ 
+              width: "100%",
+              padding: "0.75rem 1rem",
+              borderRadius: "0.75rem",
+              border: "1.5px solid var(--border)",
+              fontSize: "0.9375rem",
+              background: "var(--surface)",
+              color: "var(--text-primary)"
+            }}
           />
         </div>
         {error && (
-          <div className="status-message status-error">
+          <div className="status-error" style={{ padding: "1rem", borderRadius: "0.75rem" }}>
             <p style={{ margin: 0 }}>{error}</p>
           </div>
         )}
         {result && (
-          <div className="status-message status-success">
-            <p style={{ marginBottom: "0.5rem" }}>✓ {result.message}</p>
-            <div style={{ marginTop: "0.75rem" }}>
-              <strong style={{ fontSize: "0.875rem" }}>Encrypted Key Retrieved:</strong>
+          <div className="status-success" style={{ padding: "1.25rem", borderRadius: "0.75rem" }}>
+            <p style={{ marginBottom: "0.75rem" }}>✓ {result.message}</p>
+            <div style={{ marginTop: "1rem" }}>
+              <strong style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--text-primary)" }}>
+                Encrypted Key Retrieved:
+              </strong>
               <code
                 className="wallet-address"
                 style={{
                   display: "block",
-                  marginTop: "0.5rem",
+                  marginTop: "0.75rem",
                   fontSize: "0.75rem",
                   wordBreak: "break-all",
                   maxHeight: "80px",
-                  overflow: "auto"
+                  overflow: "auto",
+                  padding: "0.75rem",
+                  borderRadius: "0.5rem",
+                  background: "var(--background)",
+                  border: "1px solid var(--border)"
                 }}
               >
                 {result.wrappedKey.substring(0, 200)}...
               </code>
               <button
                 type="button"
-                style={{ marginTop: "0.5rem", fontSize: "0.85rem", padding: "0.25rem 0.75rem" }}
+                className="button-ghost"
+                style={{ 
+                  marginTop: "0.75rem", 
+                  fontSize: "0.875rem",
+                  padding: "0.5rem 1rem"
+                }}
                 onClick={() => {
                   navigator.clipboard.writeText(result.wrappedKey);
                   setCopied(true);
                   setTimeout(() => setCopied(false), 1500);
                 }}
               >
-                {copied ? "Copied!" : "Copy Encrypted Key"}
+                {copied ? "✓ Copied!" : "Copy Encrypted Key"}
               </button>
-              <p style={{ fontSize: "0.8125rem", marginTop: "0.5rem", marginBottom: 0 }}>
-                Use this key with your MetaMask wallet to decrypt the transcript.
+              <p style={{ fontSize: "0.8125rem", marginTop: "0.75rem", marginBottom: 0, color: "var(--text-secondary)" }}>
+                Use this key with your MetaMask wallet to decrypt the document.
               </p>
               <button
                 type="button"
-                style={{ marginTop: "0.75rem", fontSize: "0.85rem", padding: "0.25rem 0.75rem" }}
+                className="button button-secondary"
+                style={{ 
+                  marginTop: "1rem", 
+                  fontSize: "0.875rem",
+                  padding: "0.5rem 1rem",
+                  width: "100%"
+                }}
                 onClick={handleDecryptKey}
                 disabled={!!decryptedKey}
               >
-                {decryptedKey ? "Decrypted" : "Decrypt with MetaMask"}
+                {decryptedKey ? "✓ Decrypted" : "Decrypt with MetaMask"}
               </button>
               {decryptedKey && (
-                <div style={{ marginTop: "1rem" }}>
-                  <strong style={{ fontSize: "0.875rem" }}>Decrypted AES Key:</strong>
+                <div style={{ marginTop: "1.25rem" }}>
+                  <strong style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--text-primary)" }}>
+                    Decrypted AES Key:
+                  </strong>
                   <code
                     style={{
                       display: "block",
-                      marginTop: "0.5rem",
+                      marginTop: "0.75rem",
                       fontSize: "0.75rem",
                       wordBreak: "break-all",
                       maxHeight: "80px",
-                      overflow: "auto"
+                      overflow: "auto",
+                      padding: "0.75rem",
+                      borderRadius: "0.5rem",
+                      background: "var(--background)",
+                      border: "1px solid var(--border)",
+                      fontFamily: "'IBM Plex Mono', monospace"
                     }}
                   >
                     {decryptedKey}
                   </code>
                   <button
                     type="button"
-                    style={{ marginTop: "0.5rem", fontSize: "0.85rem", padding: "0.25rem 0.75rem" }}
+                    className="button-ghost"
+                    style={{ 
+                      marginTop: "0.75rem", 
+                      fontSize: "0.875rem",
+                      padding: "0.5rem 1rem"
+                    }}
                     onClick={() => {
                       navigator.clipboard.writeText(decryptedKey);
                       setCopied(true);
                       setTimeout(() => setCopied(false), 1500);
                     }}
                   >
-                    {copied ? "Copied!" : "Copy Key"}
+                    {copied ? "✓ Copied!" : "Copy Key"}
                   </button>
                 </div>
               )}
@@ -198,11 +272,16 @@ export function BreakGlassPanel({ onSuccess }: BreakGlassFormProps) {
           type="submit"
           disabled={isExecuting || !address}
           className="button button-danger"
-          style={{ padding: "1rem 2rem", fontSize: "1rem" }}
+          style={{ 
+            padding: "0.875rem 1.5rem", 
+            fontSize: "0.9375rem",
+            justifyContent: "center",
+            gap: "0.75rem"
+          }}
         >
           {isExecuting ? (
             <>
-              <span className="loading-spinner" />
+              <span className="loading-spinner" style={{ width: '1.125rem', height: '1.125rem' }} />
               Executing Break Glass...
             </>
           ) : (

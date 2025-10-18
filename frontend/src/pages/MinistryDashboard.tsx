@@ -16,14 +16,14 @@ export function MinistryDashboard({ transcripts, isLoading }: MinistryDashboardP
       </div>
       <BreakGlassPanel />
       <div className="card">
-        <h2>Ministry Oversight</h2>
+        <h2>Regulatory Oversight</h2>
         <p style={{ color: "var(--text-secondary)" }}>
-          Review transcripts and execute emergency access when legally required. All break-glass actions are logged on-chain for transparency.
+          Review sensitive documents and execute emergency decryption when legally authorized. All break-glass actions are immutably logged on-chain for audit and transparency.
         </p>
         {isLoading ? (
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <span className="loading-spinner" />
-            <p style={{ margin: 0, color: "var(--text-secondary)" }}>Loading transcripts...</p>
+            <p style={{ margin: 0, color: "var(--text-secondary)" }}>Loading documents...</p>
           </div>
         ) : (
           <TranscriptList transcripts={transcripts} />

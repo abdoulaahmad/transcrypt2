@@ -13,10 +13,10 @@ export function UniversityDashboard({ owner, transcripts, isLoading }: Universit
     <>
       <UploadTranscriptForm />
       <div className="card">
-        <h2>Issued transcripts</h2>
-        <p>Share AES keys with employers and regulators after issuing a transcript.</p>
+        <h2>Issued Documents</h2>
+        <p>Share decryption keys with external parties after issuing a secure document.</p>
         {isLoading ? (
-          <p>Loading transcripts...</p>
+          <p>Loading documents...</p>
         ) : (
           <TranscriptList
             transcripts={transcripts}

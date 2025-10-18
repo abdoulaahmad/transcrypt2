@@ -42,9 +42,6 @@ interface TranscriptRetrieveCardProps {
   disabledMessage?: string;
 }
 
-const inputClass =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200";
-
 export function TranscriptRetrieveCard({
   heading,
   description,
@@ -76,7 +73,7 @@ export function TranscriptRetrieveCard({
     mutationFn: async (payload) => {
       const transcriptId = payload.transcriptId.trim();
       if (!transcriptId) {
-        throw new Error("Transcript ID is required to retrieve the encrypted payload.");
+        throw new Error("Document ID is required to retrieve the encrypted payload.");
       }
 
       const accessorAddress = payload.accessorAddress.trim();
@@ -110,21 +107,11 @@ export function TranscriptRetrieveCard({
   const normalizedPlaintext = useMemo(() => {
     const payload = mutation.data?.decryptedBase64;
     if (!payload) return "";
-    const norm = payload.replace(/\s+/g, "");
-    // Debug: print first 40 chars of base64
-    if (norm) {
-      // eslint-disable-next-line no-console
-      console.debug('[DEBUG] Decrypted base64 (first 40):', norm.slice(0, 40));
-    }
-    return norm;
+    return payload.replace(/\s+/g, "");
   }, [mutation.data?.decryptedBase64]);
 
   const isPdfPayload = useMemo(() => {
-    const isPdf = normalizedPlaintext.startsWith("JVBERi0");
-    // Debug: print PDF detection
-    // eslint-disable-next-line no-console
-    console.debug('[DEBUG] isPdfPayload:', isPdf, '| base64 head:', normalizedPlaintext.slice(0, 12));
-    return isPdf;
+    return normalizedPlaintext.startsWith("JVBERi0");
   }, [normalizedPlaintext]);
 
   const decodedTranscript = useMemo(() => {
@@ -142,8 +129,6 @@ export function TranscriptRetrieveCard({
   useEffect(() => {
     if (!isPdfPayload || !normalizedPlaintext) {
       setPdfUrl(null);
-      // eslint-disable-next-line no-console
-      console.debug('[DEBUG] Not a PDF or no plaintext, skipping preview.');
       return;
     }
 
@@ -153,12 +138,8 @@ export function TranscriptRetrieveCard({
       const blob = new Blob([arrayBuffer], { type: "application/pdf" });
       const objectUrl = URL.createObjectURL(blob);
       setPdfUrl(objectUrl);
-      // eslint-disable-next-line no-console
-      console.debug('[DEBUG] PDF preview URL created:', objectUrl);
 
-      return () => {
-        URL.revokeObjectURL(objectUrl);
-      };
+      return () => URL.revokeObjectURL(objectUrl);
     } catch (error) {
       console.error("Failed to prepare PDF preview", error);
       setPdfUrl(null);
@@ -169,7 +150,7 @@ export function TranscriptRetrieveCard({
     if (!pdfUrl) return;
     const link = document.createElement("a");
     link.href = pdfUrl;
-    link.download = `transcript-${mutation.data?.transcriptId ?? "document"}.pdf`;
+    link.download = `document-${mutation.data?.transcriptId ?? "secure"}.pdf`;
     link.click();
   }, [mutation.data?.transcriptId, pdfUrl]);
 
@@ -181,105 +162,234 @@ export function TranscriptRetrieveCard({
   };
 
   const submitDisabled = mutation.isPending || !isSubmitEnabled;
-  const submitLabel = mutation.isPending ? "Decrypting…" : ctaLabel;
+  const submitLabel = mutation.isPending ? (
+    <>
+      <span className="loading-spinner" style={{ width: '1rem', height: '1rem', borderWidth: '2px' }} />
+      <span style={{ marginLeft: '0.5rem' }}>Decrypting…</span>
+    </>
+  ) : (
+    ctaLabel
+  );
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 className="text-xl font-semibold text-slate-900">{heading}</h2>
-      <p className="mt-1 text-sm text-slate-600">{description}</p>
+    <div className="card" style={{ padding: '1.5rem', borderRadius: '1.25rem' }}>
+      <h2 style={{ 
+        fontSize: '1.25rem', 
+        fontWeight: 600, 
+        color: 'var(--text-primary)',
+        marginBottom: '0.5rem'
+      }}>
+        {heading}
+      </h2>
+      <p style={{ 
+        fontSize: '0.875rem', 
+        color: 'var(--text-secondary)',
+        marginBottom: '1.5rem'
+      }}>
+        {description}
+      </p>
 
-      <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <div>
-          <label className="text-sm font-medium text-slate-700">Transcript ID</label>
+          <label style={{ 
+            display: 'block',
+            fontSize: '0.875rem',
+            fontWeight: 500,
+            color: 'var(--text-primary)',
+            marginBottom: '0.5rem'
+          }}>
+            Document ID
+          </label>
           <input
             required
-            className={inputClass}
             value={formState.transcriptId}
-            onChange={(event) => setFormState((prev) => ({ ...prev, transcriptId: event.target.value }))}
+            onChange={(e) => setFormState(prev => ({ ...prev, transcriptId: e.target.value }))}
             placeholder="0x…"
+            style={{
+              width: '100%',
+              padding: '0.75rem 1rem',
+              borderRadius: '0.75rem',
+              border: '1.5px solid var(--border)',
+              fontSize: '0.9375rem',
+              background: 'var(--surface)',
+              color: 'var(--text-primary)'
+            }}
           />
         </div>
+
         <div>
-          <label className="text-sm font-medium text-slate-700">Accessor wallet address</label>
+          <label style={{ 
+            display: 'block',
+            fontSize: '0.875rem',
+            fontWeight: 500,
+            color: 'var(--text-primary)',
+            marginBottom: '0.5rem'
+          }}>
+            Accessor wallet address
+          </label>
           <input
             required
-            className={inputClass}
             value={formState.accessorAddress}
-            onChange={(event) => setFormState((prev) => ({ ...prev, accessorAddress: event.target.value }))}
+            onChange={(e) => setFormState(prev => ({ ...prev, accessorAddress: e.target.value }))}
             placeholder="0x…"
+            style={{
+              width: '100%',
+              padding: '0.75rem 1rem',
+              borderRadius: '0.75rem',
+              border: '1.5px solid var(--border)',
+              fontSize: '0.9375rem',
+              background: 'var(--surface)',
+              color: 'var(--text-primary)'
+            }}
           />
         </div>
+
         <button
           type="submit"
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-indigo-300"
+          className="button"
           disabled={submitDisabled}
+          style={{ 
+            padding: '0.75rem 1.5rem',
+            justifyContent: 'center',
+            opacity: submitDisabled ? 0.8 : 1
+          }}
         >
           {submitLabel}
         </button>
       </form>
 
-      {!isSubmitEnabled && disabledMessage ? (
-        <div className="mt-3 text-xs text-slate-500">{disabledMessage}</div>
-      ) : null}
+      {!isSubmitEnabled && disabledMessage && (
+        <p style={{ 
+          fontSize: '0.8125rem', 
+          color: 'var(--text-secondary)',
+          marginTop: '0.75rem'
+        }}>
+          {disabledMessage}
+        </p>
+      )}
 
       {mutation.data && (
-        <div className="mt-6 space-y-4">
-          <div className="rounded-lg bg-slate-100 p-4 text-sm text-slate-700">
-            <p>
-              <span className="font-semibold">CID:</span> {mutation.data.cid}
+        <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div className="card" style={{ 
+            padding: '1rem',
+            background: 'var(--background)',
+            border: '1px solid var(--border)',
+            borderRadius: '0.75rem'
+          }}>
+            <p><span style={{ fontWeight: 600 }}>CID:</span> {mutation.data.cid}</p>
+            <p><span style={{ fontWeight: 600 }}>Document owner:</span> {mutation.data.studentAddress}</p>
+            <p className="font-mono" style={{ 
+              fontSize: '0.8125rem', 
+              color: 'var(--text-secondary)',
+              marginTop: '0.25rem'
+            }}>
+              Hash: {mutation.data.transcriptHash}
             </p>
-            <p>
-              <span className="font-semibold">Student address:</span> {mutation.data.studentAddress}
-            </p>
-            <p className="font-mono text-xs text-slate-500">Hash: {mutation.data.transcriptHash}</p>
           </div>
 
-          {decodedTranscript ? (
+          {decodedTranscript && (
             <div>
-              <label className="text-sm font-medium text-slate-700">Decrypted content</label>
-              <textarea readOnly className={`${inputClass} min-h-[200px] font-mono`} value={decodedTranscript} />
+              <label style={{ 
+                display: 'block',
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                color: 'var(--text-primary)',
+                marginBottom: '0.5rem'
+              }}>
+                Decrypted content
+              </label>
+              <textarea
+                readOnly
+                value={decodedTranscript}
+                className="font-mono"
+                style={{
+                  width: '100%',
+                  minHeight: '200px',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '0.75rem',
+                  border: '1.5px solid var(--border)',
+                  fontSize: '0.875rem',
+                  background: 'var(--surface)',
+                  color: 'var(--text-primary)',
+                  fontFamily: "'IBM Plex Mono', monospace"
+                }}
+              />
             </div>
-          ) : null}
+          )}
 
-          {isPdfPayload ? (
-            <div className="space-y-3">
-              <div className="flex items-center">
-                <label className="text-sm font-medium text-slate-700">Decrypted PDF (view only)</label>
-              </div>
+          {isPdfPayload && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <label style={{ 
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                color: 'var(--text-primary)'
+              }}>
+                Decrypted PDF (view only)
+              </label>
               {pdfUrl ? (
                 <iframe
-                  title="Decrypted transcript preview"
+                  title="Decrypted document preview"
                   src={pdfUrl}
-                  className="h-[500px] w-full rounded-lg border border-slate-200"
+                  style={{
+                    height: '500px',
+                    width: '100%',
+                    borderRadius: '0.75rem',
+                    border: '1px solid var(--border)'
+                  }}
                 />
               ) : (
-                <div className="rounded-lg bg-yellow-50 p-4 text-sm text-yellow-800">
+                <div className="status-warning" style={{ padding: '1rem', borderRadius: '0.75rem' }}>
                   Unable to generate a PDF preview. You can still use the download button to export the file.
                 </div>
               )}
             </div>
-          ) : null}
+          )}
 
-          {showBinaryWarning ? (
-            <div className="rounded-lg bg-yellow-50 p-4 text-sm text-yellow-800">
-              The transcript payload appears to be binary. Download and decode the base64 data to view it locally.
+          {showBinaryWarning && (
+            <div className="status-warning" style={{ padding: '1rem', borderRadius: '0.75rem' }}>
+              The document payload appears to be binary. Download and decode the base64 data to view it locally.
             </div>
-          ) : null}
+          )}
 
           <div>
-            <label className="text-sm font-medium text-slate-700">Decrypted payload (base64)</label>
+            <label style={{ 
+              display: 'block',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              color: 'var(--text-primary)',
+              marginBottom: '0.5rem'
+            }}>
+              Decrypted payload (base64)
+            </label>
             <textarea
               readOnly
-              className={`${inputClass} min-h-[180px] font-mono`}
               value={mutation.data.decryptedBase64}
+              className="font-mono"
+              style={{
+                width: '100%',
+                minHeight: '180px',
+                padding: '0.75rem 1rem',
+                borderRadius: '0.75rem',
+                border: '1.5px solid var(--border)',
+                fontSize: '0.875rem',
+                background: 'var(--surface)',
+                color: 'var(--text-primary)',
+                fontFamily: "'IBM Plex Mono', monospace"
+              }}
             />
           </div>
         </div>
       )}
 
       {mutation.error && (
-        <div className="mt-4 rounded-lg bg-rose-50 p-4 text-sm text-rose-700">{mutation.error.message}</div>
+        <div className="status-error" style={{ 
+          marginTop: '1rem',
+          padding: '1rem',
+          borderRadius: '0.75rem'
+        }}>
+          {mutation.error.message}
+        </div>
       )}
-    </section>
+    </div>
   );
 }

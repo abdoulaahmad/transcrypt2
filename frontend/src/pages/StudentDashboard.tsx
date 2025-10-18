@@ -19,14 +19,14 @@ export function StudentDashboard({ transcripts, isLoading }: StudentDashboardPro
       <RegisterEncryptionKeyButton />
       {address && <AccessHistoryPanel studentAddress={address} />}
       <div className="card">
-        <h2>Your Transcripts</h2>
+        <h2>Your Documents</h2>
         <p style={{ color: "var(--text-secondary)" }}>
-          Decrypt and view transcripts that have been shared with your wallet.
+          Decrypt and view sensitive documents that have been securely shared with your wallet.
         </p>
         {isLoading ? (
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <span className="loading-spinner" />
-            <p style={{ margin: 0, color: "var(--text-secondary)" }}>Loading transcripts...</p>
+            <p style={{ margin: 0, color: "var(--text-secondary)" }}>Loading documents...</p>
           </div>
         ) : (
           <TranscriptList

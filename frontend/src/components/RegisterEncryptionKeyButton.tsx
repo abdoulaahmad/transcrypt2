@@ -100,41 +100,128 @@ export function RegisterEncryptionKeyButton({ autoRequestOnConnect = true }: Reg
   const manualDisabled = disabled || manualPublicKey.trim().length === 0;
 
   return (
-    <div className="card" style={{ marginBottom: "1rem" }}>
-      <h3>Encryption Key</h3>
-      <p>
-        Register your wallet&apos;s encryption public key so universities can encrypt transcripts for you. MetaMask will
-        request permission to share it.
+    <div className="card" style={{ padding: "1.5rem", marginBottom: "1.5rem" }}>
+      <h3 style={{ 
+        fontSize: "1.25rem", 
+        fontWeight: 600, 
+        margin: "0 0 1rem 0",
+        color: "var(--text-primary)"
+      }}>
+        Encryption Key Registration
+      </h3>
+      
+      <p style={{ 
+        fontSize: "0.9375rem", 
+        color: "var(--text-secondary)",
+        lineHeight: 1.6,
+        marginBottom: "1.25rem"
+      }}>
+        Register your wallet's encryption public key so document issuers can securely encrypt sensitive files for you. 
+        MetaMask will request permission to share your key.
       </p>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
-  <button className="button" disabled={disabled} onClick={() => mutation.mutate(undefined)} type="button">
-          {mutation.isPending ? "Registering..." : "Fetch from MetaMask"}
+      
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1.25rem" }}>
+        <button 
+          className="button" 
+          disabled={disabled} 
+          onClick={() => mutation.mutate(undefined)} 
+          type="button"
+          style={{ 
+            padding: "0.75rem 1.25rem",
+            fontSize: "0.9375rem",
+            justifyContent: "center",
+            gap: "0.5rem"
+          }}
+        >
+          {mutation.isPending ? (
+            <>
+              <span className="loading-spinner" style={{ width: '1rem', height: '1rem' }} />
+              Registering...
+            </>
+          ) : (
+            "Fetch from MetaMask"
+          )}
         </button>
+        
         <button
-          className="button"
+          className="button button-secondary"
           disabled={manualDisabled}
           onClick={() => mutation.mutate({ publicKey: manualPublicKey })}
           type="button"
+          style={{ 
+            padding: "0.75rem 1.25rem",
+            fontSize: "0.9375rem",
+            justifyContent: "center"
+          }}
         >
-          {mutation.isPending ? "Registering..." : "Register pasted key"}
+          {mutation.isPending ? "Registering..." : "Register Pasted Key"}
         </button>
       </div>
-      <label htmlFor="manual-public-key" style={{ display: "block", marginTop: "0.75rem", fontWeight: 500 }}>
-        Or paste your encryption public key
-      </label>
-      <textarea
-        id="manual-public-key"
-        placeholder="Base64 encryption public key from MetaMask"
-        value={manualPublicKey}
-        onChange={(event) => setManualPublicKey(event.target.value)}
-        style={{ width: "100%", minHeight: "120px", marginTop: "0.25rem" }}
-      />
-      <small>
-        Copy the base64 string from MetaMask under Settings → Security &amp; Privacy → Show encryption public key. It
-        should look like <code>Ei...</code> rather than a hex string starting with <code>04</code>.
-      </small>
-      {statusMessage && <p style={{ marginTop: "0.5rem" }}>{statusMessage}</p>}
-      {mutation.isError && <p style={{ color: "#dc2626" }}>{(mutation.error as Error).message}</p>}
+      
+      <div>
+        <label 
+          htmlFor="manual-public-key" 
+          style={{ 
+            display: "block", 
+            fontSize: "0.875rem",
+            fontWeight: 500,
+            color: "var(--text-primary)",
+            marginBottom: "0.5rem"
+          }}
+        >
+          Or paste your encryption public key
+        </label>
+        <textarea
+          id="manual-public-key"
+          placeholder="Base64 encryption public key from MetaMask"
+          value={manualPublicKey}
+          onChange={(event) => setManualPublicKey(event.target.value)}
+          style={{
+            width: "100%",
+            minHeight: "120px",
+            marginTop: "0.25rem",
+            padding: "0.75rem 1rem",
+            borderRadius: "0.75rem",
+            border: "1.5px solid var(--border)",
+            fontSize: "0.875rem",
+            background: "var(--surface)",
+            color: "var(--text-primary)",
+            fontFamily: "'IBM Plex Mono', monospace",
+            resize: "vertical"
+          }}
+        />
+        <small style={{ 
+          display: "block", 
+          marginTop: "0.5rem",
+          fontSize: "0.8125rem",
+          color: "var(--text-secondary)",
+          lineHeight: 1.5
+        }}>
+          Copy the base64 string from MetaMask under <strong>Settings → Security & Privacy → Show encryption public key</strong>. 
+          It should look like <code className="wallet-address" style={{ padding: "0.125rem 0.25rem" }}>Ei...</code> 
+          rather than a hex string starting with <code className="wallet-address" style={{ padding: "0.125rem 0.25rem" }}>04</code>.
+        </small>
+      </div>
+      
+      {statusMessage && (
+        <div className="status-success" style={{ 
+          marginTop: "1rem", 
+          padding: "0.75rem", 
+          borderRadius: "0.75rem"
+        }}>
+          <p style={{ margin: 0, fontSize: "0.875rem" }}>{statusMessage}</p>
+        </div>
+      )}
+      
+      {mutation.isError && (
+        <div className="status-error" style={{ 
+          marginTop: "1rem", 
+          padding: "0.75rem", 
+          borderRadius: "0.75rem"
+        }}>
+          <p style={{ margin: 0, fontSize: "0.875rem" }}>{(mutation.error as Error).message}</p>
+        </div>
+      )}
     </div>
   );
 }

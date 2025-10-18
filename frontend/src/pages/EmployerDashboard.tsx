@@ -13,15 +13,14 @@ export function EmployerDashboard({ transcripts, isLoading }: EmployerDashboardP
     <>
       <RegisterEncryptionKeyButton />
       <div className="card">
-        <h2>Transcripts shared with your wallet</h2>
+        <h2>Documents Shared With Your Wallet</h2>
         <p>
-          Students who have granted access will appear below. MetaMask will prompt you to decrypt the AES key whenever
-          you open a transcript.
+          Document owners who have granted you access will appear below. MetaMask will prompt you to decrypt the AES key whenever you open a document.
         </p>
         {isLoading ? (
-          <p>Loading shared transcripts...</p>
+          <p>Loading shared documents...</p>
         ) : transcripts.length === 0 ? (
-          <p>No transcripts have been shared with this wallet yet. Ask the student to grant you access.</p>
+          <p>No documents have been shared with this wallet yet. Request access from the document owner.</p>
         ) : (
           <TranscriptList
             transcripts={transcripts}

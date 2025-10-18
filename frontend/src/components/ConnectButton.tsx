@@ -44,13 +44,41 @@ export function ConnectButton() {
 
   if (address) {
     return (
-      <div className="card fade-in">
-        <h2>✓ Connected</h2>
-        <code className="wallet-address" style={{ display: "block", marginTop: "1rem", marginBottom: "1.5rem" }}>
+      <div className="card fade-in" style={{ padding: "1.5rem", textAlign: "center" }}>
+        <div style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "center", 
+          gap: "0.5rem",
+          marginBottom: "1rem"
+        }}>
+          <span style={{ fontSize: "1.25rem", color: "var(--accent)" }}>✓</span>
+          <h3 style={{ margin: 0, fontSize: "1.125rem", fontWeight: 600, color: "var(--text-primary)" }}>
+            Wallet Connected
+          </h3>
+        </div>
+        <code 
+          className="wallet-address"
+          style={{ 
+            display: "block", 
+            margin: "0.75rem 0 1.25rem",
+            padding: "0.625rem",
+            fontSize: "0.875rem"
+          }}
+        >
           {address}
         </code>
-        <button className="button button-secondary" onClick={handleDisconnect} type="button">
-          Disconnect
+        <button 
+          className="button button-secondary" 
+          onClick={handleDisconnect} 
+          type="button"
+          style={{ 
+            width: "100%",
+            padding: "0.75rem",
+            fontSize: "0.9375rem"
+          }}
+        >
+          Disconnect Wallet
         </button>
       </div>
     );
@@ -64,29 +92,37 @@ export function ConnectButton() {
         onClick={handleConnect}
         type="button"
         style={{ 
-          fontSize: "1rem", 
-          padding: "1rem 2.5rem",
-          minWidth: "280px"
+          fontSize: "0.9375rem", 
+          padding: "0.875rem 1.75rem",
+          minWidth: "240px",
+          justifyContent: "center",
+          gap: "0.75rem"
         }}
       >
         {isConnecting || isLoading ? (
           <>
-            <span className="loading-spinner" />
+            <span className="loading-spinner" style={{ width: '1rem', height: '1rem' }} />
             Connecting {pendingConnector?.name ?? "wallet"}...
           </>
         ) : metamaskConnector ? (
           canConnect ? (
-            `Connect ${metamaskConnector.name}`
+            "Connect Wallet"
           ) : (
-            "Install or enable MetaMask to continue"
+            "Install MetaMask"
           )
         ) : (
-          "No MetaMask connector configured"
+          "Wallet Not Detected"
         )}
       </button>
       {(localError ?? error) && (
-        <div className="status-message status-error" style={{ marginTop: "1.5rem" }}>
-          {resolveErrorMessage(localError ?? error ?? new Error("Unable to connect"))}
+        <div className="status-error" style={{ 
+          marginTop: "1rem", 
+          padding: "1rem", 
+          borderRadius: "0.75rem"
+        }}>
+          <p style={{ margin: 0, fontSize: "0.875rem" }}>
+            {resolveErrorMessage(localError ?? error ?? new Error("Unable to connect"))}
+          </p>
         </div>
       )}
     </>

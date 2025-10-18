@@ -30,17 +30,17 @@ export default function App() {
 
   const navItems: NavItem[] = useMemo(() => {
     const items: NavItem[] = [
-      { path: "/student", label: "Student view" },
-      { path: "/employer", label: "Employer console" }
+      { path: "/student", label: "My Documents" },
+      { path: "/employer", label: "Shared Documents" }
     ];
     if (isUniversity) {
-      items.push({ path: "/university", label: "University tools" });
+      items.push({ path: "/university", label: "Document Issuance" });
     }
     if (isRegistrar) {
-      items.push({ path: "/registrar", label: "Registrar workspace" });
+      items.push({ path: "/registrar", label: "Compliance Workspace" });
     }
     if (isMinistry) {
-      items.push({ path: "/ministry", label: "Ministry oversight" });
+      items.push({ path: "/ministry", label: "Regulatory Oversight" });
     }
     return items;
   }, [isUniversity, isRegistrar, isMinistry]);
@@ -72,10 +72,10 @@ export default function App() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1.5rem", flexWrap: "wrap" }}>
           <div style={{ flex: 1 }}>
             <h1 style={{ marginBottom: "0.5rem", background: "linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-              TransCrypt
+              SafeDag
             </h1>
             <p style={{ color: "var(--text-secondary)", marginBottom: "0.75rem", fontSize: "0.9375rem" }}>
-              Secure transcript verification powered by blockchain
+              Secure document exchange powered by blockchain
             </p>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
               <span style={{ fontSize: "0.8125rem", color: "var(--text-secondary)" }}>Connected as</span>
@@ -85,13 +85,13 @@ export default function App() {
             </div>
             <RoleBadges roles={roleState.roles} />
             {roleState.error && (
-              <div className="status-message status-error" style={{ marginTop: "1rem" }}>
+              <div className="status-error" style={{ marginTop: "1rem", padding: "0.75rem", borderRadius: "0.75rem" }}>
                 {roleState.error}
               </div>
             )}
           </div>
           <button className="button button-secondary" onClick={() => disconnect()} type="button">
-            Disconnect
+            Disconnect Wallet
           </button>
         </div>
       </header>
@@ -105,8 +105,8 @@ export default function App() {
       </nav>
 
       {(transcriptsQuery.isError || accessibleTranscriptsQuery.isError) && (
-        <div className="status-message status-error">
-          <strong>⚠ Failed to load transcripts</strong>
+        <div className="status-error" style={{ padding: "1rem", borderRadius: "0.75rem", marginBottom: "1.5rem" }}>
+          <strong>⚠ Failed to load documents</strong>
           {transcriptsQuery.isError ? (
             <p style={{ marginTop: "0.5rem", marginBottom: 0 }}>{(transcriptsQuery.error as Error).message}</p>
           ) : null}

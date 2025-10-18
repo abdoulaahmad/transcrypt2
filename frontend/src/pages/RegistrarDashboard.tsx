@@ -11,10 +11,10 @@ interface RegistrarDashboardProps {
 export function RegistrarDashboard({ owner, transcripts, isLoading }: RegistrarDashboardProps) {
   return (
     <div className="card">
-      <h2>Registrar workspace</h2>
-      <p>Audit issued transcripts and share keys with external reviewers on demand.</p>
+      <h2>Compliance Workspace</h2>
+      <p>Audit issued documents and share decryption keys with authorized parties on demand.</p>
       {isLoading ? (
-        <p>Loading transcripts...</p>
+        <p>Loading documents...</p>
       ) : (
         <TranscriptList
           transcripts={transcripts}

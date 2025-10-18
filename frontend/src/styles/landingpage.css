@@ -1,0 +1,485 @@
+/* src/styles/landingpage.css */
+/* SafeShare Landing Page - Enhanced with Animations & Visual Polish */
+
+/* === Animations === */
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-15px, -20px); }
+  50% { transform: translate(15px, -10px); }
+  75% { transform: translate(10px, 25px); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pulseSubtle {
+  0%, 100% { box-shadow: 0 10px 30px rgba(79, 70, 229, 0.1); }
+  50% { box-shadow: 0 15px 40px rgba(79, 70, 229, 0.18); }
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes drift {
+  0% { transform: translate(0, 0); opacity: 0; }
+  10% { opacity: 0.4; }
+  90% { opacity: 0.3; }
+  100% { transform: translate(100vw, -80px); opacity: 0; }
+}
+
+/* Hover Sparkle for Connect Button */
+.connect-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.connect-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  transition: width 0.5s, height 0.5s;
+  z-index: 1;
+}
+
+.connect-button:hover::before {
+  width: 250px;
+  height: 250px;
+}
+
+/* === Layout === */
+.landing-container {
+  min-height: 100vh;
+  background: var(--background);
+  position: relative;
+}
+
+/* Animated Background Orbs */
+.landing-bg-orbs {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.orb-1 {
+  position: absolute;
+  top: 15%;
+  right: 10%;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.12) 0%, transparent 70%);
+  animation: float 22s infinite ease-in-out;
+}
+
+.orb-2 {
+  position: absolute;
+  bottom: 20%;
+  left: 12%;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.1) 0%, transparent 70%);
+  animation: float 26s infinite ease-in-out reverse;
+}
+
+.orb-3 {
+  position: absolute;
+  bottom: 35%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+  animation: float 24s infinite ease-in-out alternate;
+}
+
+.orb-4 {
+  position: absolute;
+  top: 40%;
+  right: 20%;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, transparent 70%);
+  animation: float 30s infinite ease-in-out;
+  opacity: 0.8;
+}
+
+.orb-5 {
+  position: absolute;
+  bottom: 10%;
+  right: 15%;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.1) 0%, transparent 70%);
+  animation: float 34s infinite ease-in-out reverse;
+  opacity: 0.7;
+}
+
+.particle {
+  position: absolute;
+  top: 50%;
+  left: -20px;
+  width: 6px;
+  height: 6px;
+  background: var(--primary-light);
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: drift 40s linear infinite;
+}
+
+/* === Hero Section === */
+.hero {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3rem;
+  text-align: center;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  background: rgba(79, 70, 229, 0.1);
+  border-radius: 9999px;
+  margin-bottom: 1.25rem;
+  font-size: 0.8125rem;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.hero-title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  margin-bottom: 1.25rem;
+  background: linear-gradient(90deg, var(--primary-light), var(--primary), var(--accent), var(--primary-light));
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  line-height: 1.1;
+  animation: gradientShift 8s ease-in-out infinite;
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.375rem);
+  color: var(--text-secondary);
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+  max-width: 650px;
+}
+
+/* Compact Hero CTA Card */
+.hero-cta-card {
+  padding: 1.75rem;
+  max-width: 550px;
+  margin: 0 auto 3rem;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.04) 0%, rgba(99, 102, 241, 0.07) 100%);
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  animation: pulseSubtle 4s infinite ease-in-out;
+  box-shadow: 0 10px 30px rgba(79, 70, 229, 0.08);
+}
+
+.hero-cta-card h3 {
+  margin-bottom: 0.875rem;
+  font-size: 1.125rem;
+}
+
+.hero-cta-card p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* === Section Headers === */
+.section-header {
+  text-align: center;
+  font-size: 1.75rem;
+  margin: 3rem 0 2rem;
+  font-weight: 600;
+}
+
+.section-subheader {
+  text-align: center;
+  font-size: 1.5rem;
+  margin: 2.5rem 0 1.75rem;
+  font-weight: 600;
+}
+
+/* === Grid Layouts === */
+.features-grid,
+.how-it-works-grid,
+.benefits-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.features-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.how-it-works-grid {
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+/* Animated Cards - Compact */
+.animated-card {
+  animation: fadeInUp 0.5s ease-out both;
+}
+
+.animated-card:nth-child(1) { animation-delay: 0s; }
+.animated-card:nth-child(2) { animation-delay: 0.15s; }
+.animated-card:nth-child(3) { animation-delay: 0.3s; }
+.animated-card:nth-child(4) { animation-delay: 0.45s; }
+.animated-card:nth-child(5) { animation-delay: 0.6s; }
+.animated-card:nth-child(6) { animation-delay: 0.75s; }
+
+/* Feature Cards */
+.feature-icon {
+  width: 3rem;
+  height: 3rem;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  border-radius: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin: 0 auto 1rem;
+}
+
+.feature-icon.success {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+}
+
+.feature-icon.info {
+  background: linear-gradient(135deg, var(--info) 0%, #2563EB 100%);
+}
+
+/* How It Works Steps */
+.step-card {
+  padding: 1.5rem;
+  height: 100%;
+  border-radius: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s ease;
+}
+
+.step-card:hover {
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.1);
+  transform: translateY(-2px);
+}
+
+.step-number {
+  width: 2.25rem;
+  height: 2.25rem;
+  background: var(--primary);
+  color: white;
+  border-radius: 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 0.875rem;
+}
+
+.step-number.success {
+  background: var(--accent);
+}
+
+.step-number.info {
+  background: var(--info);
+}
+
+/* === Enterprise Benefits Section === */
+.enterprise-benefits-section {
+  margin-top: 2.5rem;
+}
+
+.enterprise-benefits-card {
+  padding: 1.75rem;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.02) 0%, rgba(99, 102, 241, 0.04) 100%);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+}
+
+.benefits-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  margin-top: 1.75rem;
+}
+
+/* Benefit Cards - Compact with Shadow */
+.benefit-card {
+  background: var(--surface);
+  padding: 1rem;
+  border-radius: 0.875rem;
+  border: 1px solid var(--border);
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.benefit-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.1);
+  transform: translateY(-2px);
+}
+
+.benefit-icon {
+  font-size: 1.25rem;
+  margin-bottom: 0.625rem;
+  display: block;
+  text-align: center;
+}
+
+.benefit-card h4 {
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.benefit-card p {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* === CTA Section === */
+.cta-section {
+  text-align: center;
+  margin-top: 3rem;
+  padding: 2.5rem 1.5rem;
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+  border-radius: 1.25rem;
+  color: white;
+}
+
+.cta-section h2 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: white;
+}
+
+.cta-section p {
+  font-size: 1rem;
+  margin: 0 auto 1.75rem;
+  opacity: 0.95;
+  max-width: 550px;
+}
+
+/* === Footer === */
+.landing-footer {
+  border-top: 1px solid var(--border);
+  padding: 1.75rem 0;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.landing-footer p {
+  margin: 0;
+}
+
+.landing-footer .trust-badges {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  opacity: 0.7;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .hero {
+    padding: 2rem 1rem 2.5rem;
+  }
+  
+  .hero-title {
+    font-size: clamp(1.75rem, 8vw, 2.25rem);
+  }
+  
+  .hero-cta-card {
+    padding: 1.5rem;
+  }
+  
+  .section-header {
+    font-size: 1.5rem;
+    margin: 2.5rem 0 1.75rem;
+  }
+  
+  .section-subheader {
+    font-size: 1.375rem;
+  }
+  
+  .enterprise-benefits-card {
+    padding: 1.25rem;
+  }
+  
+  .benefit-card {
+    padding: 0.875rem;
+  }
+  
+  .cta-section {
+    padding: 2rem 1rem;
+  }
+  
+  /* Reduce orb sizes for mobile */
+  .orb-1 { width: 160px; height: 160px; }
+  .orb-2 { width: 130px; height: 130px; }
+  .orb-3 { width: 110px; height: 110px; }
+  .orb-4 { width: 70px; height: 70px; }
+  .orb-5 { width: 50px; height: 50px; }
+}
+
+/* === Dark Mode Enhancements === */
+@media (prefers-color-scheme: dark) {
+  .orb-1 {
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, transparent 70%);
+  }
+  .orb-2 {
+    background: radial-gradient(circle, rgba(74, 222, 128, 0.15) 0%, transparent 70%);
+  }
+  .orb-3 {
+    background: radial-gradient(circle, rgba(96, 165, 250, 0.12) 0%, transparent 70%);
+  }
+  .orb-4 {
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.12) 0%, transparent 70%);
+  }
+  .orb-5 {
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+  }
+  .particle {
+    background: var(--primary-light);
+    opacity: 0.6;
+  }
+}

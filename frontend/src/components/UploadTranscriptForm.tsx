@@ -30,21 +30,20 @@ export function UploadTranscriptForm() {
     mutationFn: async () => {
       setTxHash(null);
       if (!walletClient || !publicClient) {
-        throw new Error("Connect a wallet with the university role to issue transcripts.");
+        throw new Error("Connect a wallet with the document issuer role to issue documents.");
       }
       if (!address) {
         throw new Error("Wallet connection required.");
       }
       if (!file) {
-        throw new Error("Select an encrypted transcript file to upload.");
+        throw new Error("Select a document file to upload.");
       }
       if (!transcriptId || !transcriptId.startsWith("0x")) {
-        throw new Error("Transcript ID must be a 0x-prefixed hex string.");
+        throw new Error("Document ID must be a 0x-prefixed hex string.");
       }
       if (!student || !student.startsWith("0x")) {
-        throw new Error("Student wallet must be a 0x-prefixed address.");
+        throw new Error("Recipient wallet must be a 0x-prefixed address.");
       }
-
 
       const transcriptHash = await sha256Hex(file);
 
@@ -55,7 +54,7 @@ export function UploadTranscriptForm() {
 
       if (!encryptionPublicKey && studentAddressLower !== issuerAddressLower) {
         throw new Error(
-          "Student has not registered an encryption public key yet. Ask them to log in and register from their dashboard."
+          "Recipient has not registered an encryption public key yet. Ask them to log in and register from their dashboard."
         );
       }
 
@@ -67,15 +66,15 @@ export function UploadTranscriptForm() {
       );
 
       // Encrypt AES key for ministry (break glass)
-  const ministryAddress = import.meta.env.VITE_MINISTRY_ADDRESS;
+      const ministryAddress = import.meta.env.VITE_MINISTRY_ADDRESS;
       if (!ministryAddress) {
-        throw new Error("Ministry address is not set in environment variables.");
+        throw new Error("Regulatory authority address is not set in environment variables.");
       }
       const ministryKeyInfo = await api.getEncryptionKey(ministryAddress.toLowerCase());
       if (!ministryKeyInfo?.publicKey) {
-        throw new Error("Ministry has not registered an encryption public key yet.");
+        throw new Error("Regulatory authority has not registered an encryption public key yet.");
       }
-      console.log('[DEBUG] Ministry public key used for encryption:', ministryKeyInfo.publicKey);
+      console.log('[DEBUG] Regulatory authority public key used for encryption:', ministryKeyInfo.publicKey);
       // Use wrapAesKeyForPublicKey from crypto
       // Import at top: import { wrapAesKeyForPublicKey } from "../lib/crypto";
       const { wrapAesKeyForPublicKey } = await import("../lib/crypto");
@@ -99,9 +98,7 @@ export function UploadTranscriptForm() {
             : encryptedPackage.aesKey,
         [ministryAddress.toLowerCase()]: ministryWrappedKey
       };
-      // Only ministryWrappedKey may need conversion if it's a JSON string (for future compatibility)
-      // (Currently, ministryWrappedKey is already in the correct format from wrapAesKeyForPublicKey)
-      console.log('[DEBUG] Uploading transcript with encryptedKeys (hex):', encryptedKeys);
+      console.log('[DEBUG] Uploading document with encryptedKeys (hex):', encryptedKeys);
       await api.uploadTranscript({
         transcriptId,
         student,
@@ -130,7 +127,7 @@ export function UploadTranscriptForm() {
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["transcripts"] });
-  setTranscriptId("");
+      setTranscriptId("");
       setStudent("");
       setFile(null);
     }
@@ -144,37 +141,164 @@ export function UploadTranscriptForm() {
   };
 
   return (
-    <div className="card">
-      <h2>Issue Transcript</h2>
-      <p>Encrypt locally, store the ciphertext off-chain, and log metadata on-chain in a single flow.</p>
+    <div className="card" style={{ padding: "1.5rem" }}>
+      <h2 style={{ 
+        fontSize: "1.5rem", 
+        fontWeight: 600, 
+        margin: "0 0 1rem 0",
+        color: "var(--text-primary)"
+      }}>
+        Issue Secure Document
+      </h2>
+      
+      <p style={{ 
+        color: "var(--text-secondary)", 
+        fontSize: "0.9375rem", 
+        marginBottom: "1.5rem",
+        lineHeight: 1.6
+      }}>
+        Encrypt locally, store the ciphertext off-chain, and log metadata on-chain in a single flow.
+      </p>
 
-      <label htmlFor="transcriptId">Transcript ID (bytes32)</label>
-      <input
-        id="transcriptId"
-        onChange={(event) => setTranscriptId(event.target.value)}
-        placeholder="0x..."
-        value={transcriptId}
-      />
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <div>
+          <label 
+            htmlFor="transcriptId"
+            style={{ 
+              display: "block",
+              fontSize: "0.875rem",
+              fontWeight: 500,
+              color: "var(--text-primary)",
+              marginBottom: "0.5rem"
+            }}
+          >
+            Document ID (bytes32)
+          </label>
+          <input
+            id="transcriptId"
+            className="wallet-address"
+            onChange={(event) => setTranscriptId(event.target.value)}
+            placeholder="0x..."
+            value={transcriptId}
+            style={{
+              width: "100%",
+              padding: "0.75rem 1rem",
+              borderRadius: "0.75rem",
+              border: "1.5px solid var(--border)",
+              fontSize: "0.9375rem",
+              background: "var(--surface)",
+              color: "var(--text-primary)"
+            }}
+          />
+        </div>
 
-      <label htmlFor="student">Student Wallet</label>
-      <input
-        id="student"
-        onChange={(event) => setStudent(event.target.value)}
-        placeholder="0x student address"
-        value={student}
-      />
+        <div>
+          <label 
+            htmlFor="student"
+            style={{ 
+              display: "block",
+              fontSize: "0.875rem",
+              fontWeight: 500,
+              color: "var(--text-primary)",
+              marginBottom: "0.5rem"
+            }}
+          >
+            Recipient Wallet Address
+          </label>
+          <input
+            id="student"
+            className="wallet-address"
+            onChange={(event) => setStudent(event.target.value)}
+            placeholder="0x recipient address"
+            value={student}
+            style={{
+              width: "100%",
+              padding: "0.75rem 1rem",
+              borderRadius: "0.75rem",
+              border: "1.5px solid var(--border)",
+              fontSize: "0.9375rem",
+              background: "var(--surface)",
+              color: "var(--text-primary)"
+            }}
+          />
+        </div>
 
-      <label htmlFor="file">Transcript PDF (will be encrypted client-side)</label>
-      <input accept="application/pdf" id="file" onChange={handleFileChange} type="file" />
+        <div>
+          <label 
+            htmlFor="file"
+            style={{ 
+              display: "block",
+              fontSize: "0.875rem",
+              fontWeight: 500,
+              color: "var(--text-primary)",
+              marginBottom: "0.5rem"
+            }}
+          >
+            Document File (PDF)
+            <span style={{ color: "var(--text-secondary)", fontWeight: 400, marginLeft: "0.25rem" }}>
+              (will be encrypted client-side)
+            </span>
+          </label>
+          <input 
+            accept="application/pdf" 
+            id="file" 
+            onChange={handleFileChange} 
+            type="file"
+            style={{
+              width: "100%",
+              padding: "0.5rem",
+              border: "1.5px dashed var(--border)",
+              borderRadius: "0.75rem",
+              background: "var(--background)",
+              fontSize: "0.9375rem"
+            }}
+          />
+        </div>
 
-      <button className="button" disabled={disabled} onClick={() => mutation.mutate()} type="button">
-        {mutation.isPending ? "Issuing..." : "Encrypt & Issue"}
-      </button>
+        <button 
+          className="button" 
+          disabled={disabled} 
+          onClick={() => mutation.mutate()} 
+          type="button"
+          style={{ 
+            padding: "0.875rem",
+            fontSize: "0.9375rem",
+            justifyContent: "center",
+            gap: "0.75rem"
+          }}
+        >
+          {mutation.isPending ? (
+            <>
+              <span className="loading-spinner" style={{ width: '1rem', height: '1rem' }} />
+              Issuing Document...
+            </>
+          ) : (
+            "Encrypt & Issue Document"
+          )}
+        </button>
 
-      {mutation.isError && <p style={{ color: "#dc2626" }}>{(mutation.error as Error).message}</p>}
-      {mutation.isSuccess && txHash && (
-        <p style={{ color: "#047857" }}>Transcript issued. Tx hash: {txHash.slice(0, 18)}...</p>
-      )}
+        {mutation.isError && (
+          <div className="status-error" style={{ 
+            padding: "0.75rem", 
+            borderRadius: "0.75rem",
+            marginTop: "0.5rem"
+          }}>
+            <p style={{ margin: 0, fontSize: "0.875rem" }}>{(mutation.error as Error).message}</p>
+          </div>
+        )}
+        
+        {mutation.isSuccess && txHash && (
+          <div className="status-success" style={{ 
+            padding: "0.75rem", 
+            borderRadius: "0.75rem",
+            marginTop: "0.5rem"
+          }}>
+            <p style={{ margin: 0, fontSize: "0.875rem" }}>
+              Document issued successfully. Tx hash: <code className="wallet-address">{txHash.slice(0, 18)}...</code>
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
