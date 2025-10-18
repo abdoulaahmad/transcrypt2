@@ -51,10 +51,15 @@ export class BreakGlassService {
       createdAt: Date.now(),
       accessor: 'ministry'
     });
+    console.log('[BreakGlass][DEBUG][store] About to write key:', key, 'with value:', value);
     await new Promise<void>((resolve, reject) => {
       // @ts-ignore: access private db for break glass storage
       this.store.db.put(key, value, (err: any) => {
-        if (err) return reject(err);
+        if (err) {
+          console.error('[BreakGlass][DEBUG][store] Error writing key:', key, err);
+          return reject(err);
+        }
+        console.log('[BreakGlass][DEBUG][store] Successfully wrote key:', key);
         resolve();
       });
     });
@@ -73,19 +78,21 @@ export class BreakGlassService {
     // @ts-ignore
     const dbInstance = this.store.db;
     console.log('[BreakGlass][DEBUG][get] RocksDB path:', dbPath, 'db instance:', dbInstance);
-    console.log('[BreakGlass][DEBUG] Retrieving ministry key with:', { transcriptId, key });
+    console.log('[BreakGlass][DEBUG][get] Retrieving ministry key with:', { transcriptId, key });
     try {
       // Use getRaw to fetch the breakglass key directly
       // @ts-ignore: getRaw is private
       const data = await this.store.getRaw(key);
+      console.log('[BreakGlass][DEBUG][get] Raw data fetched for key:', key, data);
       if (!data) {
-        console.log('[BreakGlass][DEBUG] No data found for', key);
+        console.log('[BreakGlass][DEBUG][get] No data found for', key);
         return null;
       }
       const parsed = JSON.parse(data);
+      console.log('[BreakGlass][DEBUG][get] Parsed data:', parsed);
       return parsed.wrappedKey;
     } catch (error) {
-      console.error(`[BreakGlass] Failed to retrieve ministry key:`, error);
+      console.error(`[BreakGlass][DEBUG][get] Failed to retrieve ministry key:`, error);
       return null;
     }
   }
@@ -260,8 +267,9 @@ export class BreakGlassService {
         return;
       }
 
-      const data = JSON.parse(transcript);
-      
+      // Only parse if transcript is a string
+      const data = typeof transcript === 'string' ? JSON.parse(transcript) : transcript;
+
       console.log(`╔════════════════════════════════════════════════════════════╗`);
       console.log(`║ 🚨 BREAK GLASS NOTIFICATION                                ║`);
       console.log(`╠════════════════════════════════════════════════════════════╣`);

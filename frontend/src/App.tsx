@@ -83,7 +83,12 @@ export default function App() {
                 {truncatedAddress}
               </code>
             </div>
-            <RoleBadges roles={roleState.roles} />
+            {/* Show 'Issuer' badge in employer header if user is university */}
+            {location.pathname === '/employer' && roleState.roles.isUniversity ? (
+              <span className="badge badge-primary">📜 Issuer</span>
+            ) : (
+              <RoleBadges roles={roleState.roles} />
+            )}
             {roleState.error && (
               <div className="status-error" style={{ marginTop: "1rem", padding: "0.75rem", borderRadius: "0.75rem" }}>
                 {roleState.error}

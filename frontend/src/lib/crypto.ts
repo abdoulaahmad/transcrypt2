@@ -42,10 +42,9 @@ async function walletDecrypt(encryptedData: string, walletAddress: HexAddress): 
     });
   } catch (error) {
     if (isMethodNotSupported(error)) {
-      return window.ethereum.request<string>({
-        method: "wallet_decrypt",
-        params: [encryptedData, walletAddress]
-      });
+      throw new Error(
+        "MetaMask does not support wallet_decrypt. Please use the latest MetaMask extension and ensure you are on desktop. Only eth_decrypt is supported."
+      );
     }
     throw error;
   }

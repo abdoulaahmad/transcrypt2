@@ -2,32 +2,33 @@ import { jsx as _jsx } from "react/jsx-runtime";
 import { WagmiConfig, createConfig, configureChains } from "wagmi";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
-const ganacheChain = {
-    id: Number.parseInt(import.meta.env.VITE_GANACHE_CHAIN_ID ?? "1337", 10),
-    name: "Ganache",
+const blockdagChain = {
+    id: Number.parseInt(
+        import.meta.env.VITE_CHAIN_ID ?? "1043", 10),
+    name: "BlockDAG",
     nativeCurrency: {
-        name: "Ganache ETH",
+        name: "BlockDAG ETH",
         symbol: "ETH",
         decimals: 18
     },
     rpcUrls: {
         default: {
             http: [
-                import.meta.env.VITE_RPC_URL ?? "http://127.0.0.1:7545"
+                import.meta.env.VITE_RPC_URL ?? "https://rpc.awakening.bdagscan.com"
             ]
         },
         public: {
             http: [
-                import.meta.env.VITE_RPC_URL ?? "http://127.0.0.1:7545"
+                import.meta.env.VITE_RPC_URL ?? "https://rpc.awakening.bdagscan.com"
             ]
         }
     }
 };
 const { chains, publicClient, webSocketPublicClient } = configureChains([
-    ganacheChain
+    blockdagChain
 ], [
     jsonRpcProvider({
-        rpc: () => ({ http: import.meta.env.VITE_RPC_URL ?? "http://127.0.0.1:7545" })
+    rpc: () => ({ http: import.meta.env.VITE_RPC_URL ?? "https://rpc.awakening.bdagscan.com" })
     })
 ]);
 const config = createConfig({

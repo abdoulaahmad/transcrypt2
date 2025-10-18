@@ -52,7 +52,7 @@ export function BreakGlassPanel({ onSuccess }: BreakGlassFormProps) {
   const handleDecryptKey = async () => {
     if (!result?.wrappedKey) return;
     try {
-      const key = await decryptAesKey(result.wrappedKey);
+      const key = await decryptAesKey(result.wrappedKey, address);
       setDecryptedKey(key);
       setCopied(false);
     } catch (err: any) {

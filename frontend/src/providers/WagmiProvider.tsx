@@ -4,29 +4,29 @@ import type { Chain } from "wagmi";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
-const ganacheChain: Chain = {
-  id: Number.parseInt(import.meta.env.VITE_GANACHE_CHAIN_ID ?? "5777", 10),
-  name: "Ganache",
+const blockdagChain: Chain = {
+  id: Number.parseInt(import.meta.env.VITE_CHAIN_ID ?? "1043", 10),
+  name: "BlockDAG",
   nativeCurrency: {
-    name: "Ganache ETH",
+    name: "BlockDAG ETH",
     symbol: "ETH",
     decimals: 18
   },
   rpcUrls: {
     default: {
-      http: [import.meta.env.VITE_RPC_URL ?? "http://127.0.0.1:7545"]
+      http: [import.meta.env.VITE_RPC_URL ?? "https://rpc.awakening.bdagscan.com"]
     },
     public: {
-      http: [import.meta.env.VITE_RPC_URL ?? "http://127.0.0.1:7545"]
+      http: [import.meta.env.VITE_RPC_URL ?? "https://rpc.awakening.bdagscan.com"]
     }
   }
 };
 
 const { chains, publicClient, webSocketPublicClient } = configureChains([
-  ganacheChain
+  blockdagChain
 ], [
   jsonRpcProvider({
-    rpc: () => ({ http: import.meta.env.VITE_RPC_URL ?? "http://127.0.0.1:7545" })
+    rpc: () => ({ http: import.meta.env.VITE_RPC_URL ?? "https://rpc.awakening.bdagscan.com" })
   })
 ]);
 

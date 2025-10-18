@@ -12,7 +12,7 @@ const requiredEnv = (name: string, fallback?: string): string => {
 
 export const config = {
   port: Number(process.env.PORT ?? 4000),
-  rpcUrl: requiredEnv("RPC_URL", "http://127.0.0.1:7545"),
+  rpcUrl: requiredEnv("BLOCKDAG_RPC_URL", "https://rpc.awakening.bdagscan.com"),
   registryAddress: requiredEnv("TRANSCRIPT_REGISTRY_ADDRESS"),
   contractAddress: requiredEnv("TRANSCRIPT_REGISTRY_ADDRESS"), // Same as registry address
   ministryAddress: process.env.MINISTRY_ADDRESS ?? '',

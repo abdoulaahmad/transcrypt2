@@ -294,7 +294,16 @@ export function UploadTranscriptForm() {
             marginTop: "0.5rem"
           }}>
             <p style={{ margin: 0, fontSize: "0.875rem" }}>
-              Document issued successfully. Tx hash: <code className="wallet-address">{txHash.slice(0, 18)}...</code>
+              Document issued successfully.<br />
+              Tx hash: <code className="wallet-address">{txHash}</code>
+              <button
+                type="button"
+                className="button button-secondary"
+                style={{ marginLeft: "1rem", fontSize: "0.8125rem", padding: "0.25rem 0.75rem" }}
+                onClick={() => navigator.clipboard.writeText(txHash)}
+              >
+                Copy Tx Hash
+              </button>
             </p>
           </div>
         )}
