@@ -37,7 +37,7 @@ export function LandingPage() {
         </div>
         
         <p className="hero-subtitle">
-          Securely exchange, verify, and audit sensitive business documents — with <span className="highlight-text">zero trust required</span>.
+          Securely exchange, verify, and audit sensitive business documents  with <span className="highlight-text">zero trust required</span>.
         </p>
         
         {/* Glassmorphic Hero CTA Card */}
@@ -134,7 +134,7 @@ export function LandingPage() {
               <div className="step-stats">
                 <span className="stat-item">
                   {/* ✅ FIXED: Properly escaped < symbol */}
-                  <span className="stat-value">{'<'} 3s</span>
+                  <span className="stat-value">{''} 3s</span>
                   <span className="stat-label">Upload Time</span>
                 </span>
               </div>

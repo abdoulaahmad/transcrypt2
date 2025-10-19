@@ -1,9 +1,9 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 const labels = [
-    { key: "isUniversity", label: "University", color: "#1d4ed8" },
-    { key: "isRegistrar", label: "Registrar", color: "#047857" },
-    { key: "isMinistry", label: "Ministry", color: "#7c3aed" },
-    { key: "isAdmin", label: "Admin", color: "#f97316" }
+    { key: "isUniversity", label: "📜 Document Issuer", color: "#1d4ed8" },
+    { key: "isRegistrar", label: "✅ Compliance Officer", color: "#047857" },
+    { key: "isMinistry", label: "⚖️ Regulatory Authority", color: "#7c3aed" },
+    { key: "isAdmin", label: "🔐 System Admin", color: "#f97316" }
 ];
 export function RoleBadges({ roles }) {
     return (_jsxs("div", {
