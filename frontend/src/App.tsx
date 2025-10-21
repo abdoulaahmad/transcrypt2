@@ -3,6 +3,7 @@ import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from "reac
 import { useDisconnect } from "wagmi";
 
 import { RoleBadges } from "./components/RoleBadges";
+import { ThemeToggle } from "./components/ThemeToggle";
 import { useRoles } from "./hooks/useRoles";
 import { useTranscripts, useAccessibleTranscripts } from "./hooks/useTranscripts";
 import { LandingPage } from "./pages/LandingPage";
@@ -95,9 +96,12 @@ export default function App() {
               </div>
             )}
           </div>
-          <button className="button button-secondary" onClick={() => disconnect()} type="button">
-            Disconnect Wallet
-          </button>
+          <div style={{ display: "flex", gap: "1rem" }}>
+            <ThemeToggle />
+            <button className="button button-secondary" onClick={() => disconnect()} type="button">
+              Disconnect Wallet
+            </button>
+          </div>
         </div>
       </header>
 
