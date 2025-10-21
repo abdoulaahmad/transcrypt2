@@ -697,3 +697,11 @@ label {
         box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
     }
 }
+
+html.dark {
+    --background: #0F172A;
+    --surface: #1E293B;
+    --text-primary: #F1F5F9;
+    --text-secondary: #CBD5E1;
+    --border: #334155;
+}
