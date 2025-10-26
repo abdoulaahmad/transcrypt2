@@ -1,4 +1,4 @@
-# SafeDag
+# Transcrypt
 
 A secure, blockchain-powered platform for issuing, sharing, and verifying sensitive documents (such as NDAs, transcripts, and agreements) with fine-grained access control and emergency (break-glass) workflows, powered by blockchain.
 
